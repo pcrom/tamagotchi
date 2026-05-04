@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Tamagotchi
@@ -7,6 +10,8 @@ namespace Tamagotchi
     public partial class VPScreen : Form
     {
         private Timer TamagotchiHeartbeat;
+
+        private const string apiEndpoint = "https://ewaygames.com/GameApi/VirtuPet";
 
 
         // Current stats (default values until API loads)
@@ -30,6 +35,12 @@ namespace Tamagotchi
 
         private Random rnd = new Random();
         private string petState = "Idle"; // e.g., "Idle", "Eating", "Sleeping"
+
+        // Define button hitboxes (x, y, width, height)
+        const int y  = 340;
+        private Rectangle feedBtn = new Rectangle(20, y, 80, 40);
+        private Rectangle playBtn = new Rectangle(120, y, 80, 40);
+        private Rectangle sleepBtn = new Rectangle(220, y, 80, 40);
 
         public VPScreen()
         {
@@ -149,6 +160,16 @@ namespace Tamagotchi
                     g.FillEllipse(Brushes.Black, petX + 9, petY - 10, 6, 6);
                 }
 
+                g.FillRectangle(Brushes.LightGray, feedBtn);
+                g.DrawString("FEED", new Font("Courier New", 12), Brushes.Black, feedBtn.X + 10, feedBtn.Y + 10);
+
+                g.FillRectangle(Brushes.LightGray, playBtn);
+                g.DrawString("PLAY", new Font("Courier New", 12), Brushes.Black, playBtn.X + 10, playBtn.Y + 10);
+
+                g.FillRectangle(Brushes.LightGray, sleepBtn);
+                g.DrawString("SLEEP", new Font("Courier New", 12), Brushes.Black, sleepBtn.X + 10, sleepBtn.Y + 10);
+
+
                 g.DrawString($"STATUS: {petState}", new Font("Courier New", 12), Brushes.Black, 10, 150);
             }
             pictureBox1.Image?.Dispose();
@@ -170,6 +191,50 @@ namespace Tamagotchi
             TamagotchiHeartbeat.Tick += TamagotchiHeartbeat_Tick;
 
             
+        }
+
+        public async Task<string> UpdatePetStats(string petName, int hunger)
+        {
+            using (var client = new HttpClient())
+            {
+                var values = new Dictionary<string, string> 
+                {
+                    { "name", petName },
+                    { "hunger", hunger.ToString() }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(apiEndpoint + "/petstats.php", content);
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (feedBtn.Contains(e.Location))
+            {
+                PerformAction("feed");
+            }
+            else if (playBtn.Contains(e.Location))
+            {
+                PerformAction("play");
+            }
+            else if (sleepBtn.Contains(e.Location))
+            {
+                PerformAction("sleep");
+            }
+        }
+
+        private async void PerformAction(string action)
+        {
+            petState = "Debug State";
+            RenderGame();
+
+            // Update stats via API
+
+
+            // Reset state after a moment
+            await Task.Delay(1000);
+            petState = "Idle";
         }
     }
 }
