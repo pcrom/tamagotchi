@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Net.Http;
@@ -200,6 +201,14 @@ namespace HanaJotchi
             HanaJotchiHeartbeat.Tick += HanaJotchiHeartbeat_Tick;
 
             
+        }
+
+        public async Task SyncPetStats()
+        {
+            string responseJson = await UpdatePetStats();
+            // Use a JSON parser to get the corrected hunger from the server
+            var serverData = JsonConvert.DeserializeObject<dynamic>(responseJson);
+            pet.Hunger = int.Parse(serverData.new_hunger); // Update local hunger with server's response
         }
 
         public async Task<string> UpdatePetStats()
