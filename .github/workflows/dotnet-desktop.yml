@@ -1,0 +1,34 @@
+name: Build HanaJotchi (.NET Framework 4.8)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest # Required for .NET Framework support
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2 # Essential for legacy package restoration
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2 # Sets up MSBuild path for Framework projects
+
+    - name: Restore NuGet Packages
+      run: nuget restore HanaJotchi.sln # Replace with your actual .sln filename
+
+    - name: Build Solution
+      run: msbuild HanaJotchi.sln /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: HanaJotchi-Release
+        # Update this path if your build output goes elsewhere (e.g., bin\Release)
+        path: bin/Release/ 
