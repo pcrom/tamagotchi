@@ -14,7 +14,7 @@ namespace HanaJotchi
     {
         private bool UsePrivateServer = false;
 
-        private HanaJotchiGotchaGotcha pet;
+        private GotchaGotchiPet hanaJotchiPet;
         private Timer HanaJotchiHeartbeat;
 
         private string apiEndpoint = "https://ewaygames.com/GameApi/VirtuPet";
@@ -28,12 +28,12 @@ namespace HanaJotchi
         // Current stats (default values until API loads)
 
         // Position
-        private int petX = 100;
-        private int petY = 100;
+        private int petX = 160;
+        private int petY = 300;
 
 
         // Where the pet wants to go
-        private int targetX = 100;
+        private int targetX = 320;
 
         // Tracks when to blink
         private int blinkTimer = 0;
@@ -42,10 +42,10 @@ namespace HanaJotchi
         private string petState = "Idle"; // e.g., "Idle", "Eating", "Sleeping"
 
         // Define button hitboxes (x, y, width, height)
-        const int y  = 340;
-        private Rectangle feedBtn = new Rectangle(20, y, 80, 40);
-        private Rectangle playBtn = new Rectangle(120, y, 80, 40);
-        private Rectangle sleepBtn = new Rectangle(220, y, 80, 40);
+        const int y  = 40;
+        private Rectangle feedBtn = new Rectangle(160, y + 20, 80, 40);
+        private Rectangle playBtn = new Rectangle(360, y + 10, 80, 40);
+        private Rectangle sleepBtn = new Rectangle(260, y - 20, 80, 40);
         private Rectangle exitBtn;
 
         public VPScreen(bool enablePrivateServer = false)
@@ -102,12 +102,12 @@ namespace HanaJotchi
             if (blinkTimer > 30)
             { 
                 
-                pet.IsBlinking = true;
+                hanaJotchiPet.IsBlinking = true;
 
                 // Keep eyes shut for 3 frames
                 if (blinkTimer > 33)
                 {
-                    pet.IsBlinking = false;
+                    hanaJotchiPet.IsBlinking = false;
                     blinkTimer = 0;
                 }
             }
@@ -221,15 +221,15 @@ namespace HanaJotchi
 
 
                 //Draw Stats Bars
-                DrawStatBar(g, "Hunger", pet.Hunger, 10, 10, 0, 3, GetStatColor(pet.Hunger, true));
-                DrawStatBar(g, "Happiness", pet.Happiness, 10, 35, 10, 3, GetStatColor(pet.Happiness, false));
+                DrawStatBar(g, "Hunger", hanaJotchiPet.Hunger, 310, 410, 0, 3, GetStatColor(hanaJotchiPet.Hunger, true));
+                DrawStatBar(g, "Happiness", hanaJotchiPet.Happiness, 310, 435, 10, 3, GetStatColor(hanaJotchiPet.Happiness, false));
 
                 // Debug: Show targetX as a number and bar for testing movement logic
                 int stateUpdate = targetX % 100;
-                g.DrawString($"{stateUpdate}", new Font("Courier New", 12), Brushes.Black, 194, 269);
+                g.DrawString($"{stateUpdate}", new Font("Courier New", 12), Brushes.Black, 270, 409);
 
                 // Shows a pre-dertimed move from random logic, this is to help visualize the movement code and ensure the pet moves toward the targetX as expected.
-                DrawStatBar(g, "Debug Move", stateUpdate, 30, 270, 26, 1, Color.Aqua);
+                DrawStatBar(g, "Debug Move", stateUpdate, 99, 410, 26, 1, Color.Aqua);
 
                 // Draw Body (centered on petX/petY)
                 int size = 60;
@@ -237,7 +237,7 @@ namespace HanaJotchi
                 g.FillEllipse(Brushes.White, petX - (size / 2) + 2, petY - (size / 2) + 2, size - 4, size - 4);
 
                 // Draw Eyes
-                if (pet.IsBlinking)
+                if (hanaJotchiPet.IsBlinking)
                 {
                     // Draw horizontal lines for closed eyes
                     g.DrawLine(new Pen(Color.Black, 2), petX - 15, petY - 5, petX - 5, petY - 5);
@@ -267,10 +267,10 @@ namespace HanaJotchi
 
 
                 // Draw Debug State
-                g.DrawString($"STATUS: {petState}", new Font("Courier New", 12), Brushes.Black, 10, 150);
+                g.DrawString($"STATUS: {petState}", new Font("Courier New", 12), Brushes.Black, 111, 470);
 
                 // Draw Experience as a pie chart
-                g.FillPie(Brushes.BlueViolet, 10, 210, 50, 50, 0, (pet.Experience % 100) * 3.6f);
+                g.FillPie(Brushes.BlueViolet, 99, 340, 50, 50, 0, (hanaJotchiPet.Experience % 100) * 3.6f);
 
             }
 
@@ -306,7 +306,7 @@ namespace HanaJotchi
 
 
             // Initialize pet data (in a real game, this would come from the API)
-            pet = new HanaJotchiGotchaGotcha
+            hanaJotchiPet = new GotchaGotchiPet
             {
                 Name = "Fluffy",
                 Token = "abc123", //This Token would be a unique identifier from the API, it is the lifeline to your pet's data and must be included in all API calls to update or retrieve stats.
@@ -338,7 +338,7 @@ namespace HanaJotchi
             string responseJson = await UpdatePetStats();
             // Use a JSON parser to get the corrected hunger from the server
             var serverData = JsonConvert.DeserializeObject<dynamic>(responseJson);
-            pet.Hunger = int.Parse(serverData.new_hunger); // Update local hunger with server's response
+            hanaJotchiPet.Hunger = int.Parse(serverData.new_hunger); // Update local hunger with server's response
         }
 
         public async Task<string> UpdatePetStats()
@@ -347,9 +347,9 @@ namespace HanaJotchi
             {
                 var values = new Dictionary<string, string> 
                 {
-                    { "name", pet.Name },
-                    { "token", pet.Token },
-                    { "hunger", pet.Hunger.ToString() }
+                    { "name", hanaJotchiPet.Name },
+                    { "token", hanaJotchiPet.Token },
+                    { "hunger", hanaJotchiPet.Hunger.ToString() }
                 };
                 var content = new FormUrlEncodedContent(values);
                 var response = await client.PostAsync(apiEndpoint + "/petstats.php", content);
@@ -387,13 +387,13 @@ namespace HanaJotchi
             switch(action)
             {
                 case "feed":
-                    pet.Feed();
+                    hanaJotchiPet.Feed();
                     break;
                 case "play":
-                    pet.Play();
+                    hanaJotchiPet.Play();
                     break;
                 case "sleep":
-                    pet.Sleep();
+                    hanaJotchiPet.Sleep();
                     break;
                 case "exit":
                     Application.Exit();

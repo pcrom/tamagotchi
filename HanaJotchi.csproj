@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HanaJotchiGotchaGotcha.cs" />
+    <Compile Include="GotchaGotchiPet.cs" />
     <Compile Include="VPScreen.cs">
       <SubType>Form</SubType>
     </Compile>

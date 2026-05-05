@@ -2,7 +2,7 @@
 
 namespace HanaJotchi
 {
-    class HanaJotchiGotchaGotcha
+    class GotchaGotchiPet
     {
         public string Name { get; set; }
         public string Token { get; set; }
@@ -143,7 +143,7 @@ namespace HanaJotchi
             Console.WriteLine("TODO: Invoke greeting, properly display on screen!");
         }
 
-        public HanaJotchiGotchaGotcha()
+        public GotchaGotchiPet()
         {
 
         }
