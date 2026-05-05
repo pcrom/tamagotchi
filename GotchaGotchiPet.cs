@@ -73,14 +73,6 @@ namespace HanaJotchi
             IsAwake = true;
         }
 
-        public void ForceBlink()
-        {
-            IsBlinking = true;
-            // Simulate blinking for a short duration
-            System.Threading.Thread.Sleep(500);
-            IsBlinking = false;
-        }
-
         public void GainExperience(long amount)
         {
             Experience += amount;
