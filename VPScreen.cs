@@ -9,6 +9,7 @@ namespace Tamagotchi
 {
     public partial class VPScreen : Form
     {
+        private TamagotchiGotchaGotcha pet;
         private Timer TamagotchiHeartbeat;
 
         private const string apiEndpoint = "https://ewaygames.com/GameApi/VirtuPet";
@@ -20,15 +21,9 @@ namespace Tamagotchi
         private int petX = 100;
         private int petY = 100;
 
-        // Stats
-        private int hunger = 10;
-        private int happiness = 89;
 
         // Where the pet wants to go
         private int targetX = 100;
-
-        // Are eyes closed?
-        private bool isBlinking = false;
 
         // Tracks when to blink
         private int blinkTimer = 0;
@@ -91,12 +86,12 @@ namespace Tamagotchi
             if (blinkTimer > 30)
             { 
                 
-                isBlinking = true;
+                pet.IsBlinking = true;
 
                 // Keep eyes shut for 3 frames
                 if (blinkTimer > 33)
-                { 
-                    isBlinking = false;
+                {
+                    pet.IsBlinking = false;
                     blinkTimer = 0;
                 }
             }
@@ -132,8 +127,8 @@ namespace Tamagotchi
                 g.Clear(Color.FromArgb(200, 215, 180)); // Background
 
                 // Simple rectangles representing the 4 hearts/bars often used in Tamagotchi
-                DrawStatBar(g, "Hunger", hunger, 10, 10, 0, 3, Color.Red);
-                DrawStatBar(g, "Happiness", happiness, 10, 35, 10, 3, Color.Gold);
+                DrawStatBar(g, "Hunger",pet.Hunger, 10, 10, 0, 3, Color.Red);
+                DrawStatBar(g, "Happiness", pet.Happiness, 10, 35, 10, 3, Color.Gold);
 
 
                 int stateUpdate = targetX % 100;
@@ -147,7 +142,7 @@ namespace Tamagotchi
                 g.FillEllipse(Brushes.White, petX - (size / 2) + 2, petY - (size / 2) + 2, size - 4, size - 4);
 
                 // Draw Eyes
-                if (isBlinking)
+                if (pet.IsBlinking)
                 {
                     // Draw horizontal lines for closed eyes
                     g.DrawLine(new Pen(Color.Black, 2), petX - 15, petY - 5, petX - 5, petY - 5);
@@ -179,6 +174,20 @@ namespace Tamagotchi
 
         private void VPScreen_Shown(object sender, EventArgs e)
         {
+            // Initialize pet data (in a real game, this would come from the API)
+            pet = new TamagotchiGotchaGotcha
+            {
+                Name = "Fluffy",
+                Token = "abc123", //This Token would be a unique identifier from the API, it is the lifeline to your pet's data and must be included in all API calls to update or retrieve stats.
+                Age = 2,
+                Description = "A happy little pet.",
+                Experience = 150,
+                Happiness = 97,
+                Hunger = 10,
+                IsAwake = true,
+                Species = "Cat",
+            };
+
             // Create the timer that will drive the game loop
             TamagotchiHeartbeat = new Timer
             {
@@ -193,14 +202,15 @@ namespace Tamagotchi
             
         }
 
-        public async Task<string> UpdatePetStats(string petName, int hunger)
+        public async Task<string> UpdatePetStats()
         {
             using (var client = new HttpClient())
             {
                 var values = new Dictionary<string, string> 
                 {
-                    { "name", petName },
-                    { "hunger", hunger.ToString() }
+                    { "name", pet.Name },
+                    { "token", pet.Token },
+                    { "hunger", pet.Hunger.ToString() }
                 };
                 var content = new FormUrlEncodedContent(values);
                 var response = await client.PostAsync(apiEndpoint + "/petstats.php", content);
@@ -231,6 +241,18 @@ namespace Tamagotchi
 
             // Update stats via API
 
+            switch(action)
+            {
+                case "feed":
+                    pet.Feed();
+                    break;
+                case "play":
+                    pet.Play();
+                    break;
+                case "sleep":
+                    pet.Sleep();
+                    break;
+            }
 
             // Reset state after a moment
             await Task.Delay(1000);

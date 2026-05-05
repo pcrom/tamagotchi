@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TamagotchiGotchaGotcha.cs" />
     <Compile Include="VPScreen.cs">
       <SubType>Form</SubType>
     </Compile>
