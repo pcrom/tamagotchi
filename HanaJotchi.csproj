@@ -49,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DoubleBufferedPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GotchaGotchiPet.cs" />
     <Compile Include="VPScreen.cs">
       <SubType>Form</SubType>
