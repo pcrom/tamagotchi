@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -131,15 +132,64 @@ namespace HanaJotchi
             Bitmap canvas = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             using (Graphics g = Graphics.FromImage(canvas))
             {
-                g.Clear(Color.FromArgb(255,0,1,0)); // Transparent Background
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-                // Draw background "pill" shape
-                Rectangle pillRect = new Rectangle(10, 10, pictureBox1.Width-30, pictureBox1.Height-30);
-                SolidBrush myBrush = new SolidBrush(Color.FromArgb(255, 200, 215, 180));
-                g.FillEllipse(myBrush, pillRect);
+                // Transparent Background
+                g.Clear(Color.FromArgb(255,0,1,0));
 
 
+                // Enable anti-aliasing for smoother shapes
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+
+
+                // Define the bounding area for the egg
+                Rectangle rect = new Rectangle(10, 10, pictureBox1.Width - 40, pictureBox1.Height - 40);
+
+                // Create the egg shape using Bezier curves
+                using (GraphicsPath path = new GraphicsPath())
+                {
+                    // Start at the top center then end at the bottom of the rectangle
+                    Point top = new Point(rect.X + rect.Width / 2, rect.Y);
+                    Point bottom = new Point(rect.X + rect.Width / 2, rect.Bottom);
+
+                    // RIGHT SIDE (Wide at top, Narrow at bottom)
+                    path.AddBezier(
+                        top,
+                        new Point(rect.Right + (rect.Width / 3), rect.Top),      // Pushes the TOP out (wide A)
+                        new Point(rect.Right - (rect.Width / 6), rect.Bottom),   // Pulls the BOTTOM in (narrow B)
+                        bottom);
+
+                    // LEFT SIDE (Wide at top, Narrow at bottom)
+                    path.AddBezier(
+                        bottom,
+                        new Point(rect.Left + (rect.Width / 6), rect.Bottom),    // Pulls the BOTTOM in (narrow A)
+                        new Point(rect.Left - (rect.Width / 3), rect.Top),       // Pushes the TOP out (wide B)
+                        top);
+
+                    // Fill the egg with a light color and draw a border
+                    g.FillPath(new SolidBrush(Color.FromArgb(200, 215, 180)), path);
+
+                    // Draw a thicker border
+                    g.DrawPath(new Pen(Color.Black, 3), path);
+                }
+
+                // Define the 'Screen' area inside the egg
+                // We'll place it in the center, slightly above the buttons
+                int screenWidth = (int)(rect.Width * 0.7);
+                int screenHeight = (int)(rect.Height * 0.4);
+                int screenX = rect.X + (rect.Width - screenWidth) / 2;
+                int screenY = rect.Y + (rect.Height / 6); // Positioned in the upper-middle
+
+                Rectangle screenRect = new Rectangle(screenX, screenY, screenWidth, screenHeight);
+
+                // Draw the LCD background (classic greenish-grey)
+                Color lcdColor = Color.FromArgb(255, 170, 185, 150);
+                g.FillRectangle(new SolidBrush(lcdColor), screenRect);
+
+                // Draw a double border for depth
+                g.DrawRectangle(new Pen(Color.DimGray, 2), screenRect); // Inner frame
+                g.DrawRectangle(new Pen(Color.Black, 1), Rectangle.Inflate(screenRect, 2, 2)); // Outer plastic edge
+
+
+                //Draw Stats Bars
                 DrawStatBar(g, "Hunger",pet.Hunger, 10, 10, 0, 3, Color.Red);
                 DrawStatBar(g, "Happiness", pet.Happiness, 10, 35, 10, 3, Color.Gold);
 
@@ -168,6 +218,7 @@ namespace HanaJotchi
                 }
 
 
+                // Draw Buttons
                 g.FillRectangle(Brushes.LightGray, feedBtn);
                 g.DrawString("FEED", new Font("Courier New", 12), Brushes.Black, feedBtn.X + 10, feedBtn.Y + 10);
 
@@ -177,14 +228,16 @@ namespace HanaJotchi
                 g.FillRectangle(Brushes.LightGray, sleepBtn);
                 g.DrawString("SLEEP", new Font("Courier New", 12), Brushes.Black, sleepBtn.X + 10, sleepBtn.Y + 10);
 
-                //Draw Exit Button
+                // Draw Exit Button
                 g.FillRectangle(Brushes.DarkRed, exitBtn);
                 g.DrawString("X", new Font("Courier New", 20, FontStyle.Bold), Brushes.White, exitBtn.X + 6, exitBtn.Y + 5);
 
 
+                // Draw Debug State
                 g.DrawString($"STATUS: {petState}", new Font("Courier New", 12), Brushes.Black, 10, 150);
 
-                g.FillPie(Brushes.Fuchsia, 10, 210, 50, 50, 0, (pet.Experience % 100) * 3.6f);
+                // Draw Experience as a pie chart
+                g.FillPie(Brushes.BlueViolet, 10, 210, 50, 50, 0, (pet.Experience % 100) * 3.6f);
 
             }
             pictureBox1.Image?.Dispose();
@@ -203,7 +256,7 @@ namespace HanaJotchi
                 Token = "abc123", //This Token would be a unique identifier from the API, it is the lifeline to your pet's data and must be included in all API calls to update or retrieve stats.
                 Age = 2,
                 Description = "A happy little pet.",
-                Experience = 99,
+                Experience = 19,
                 Happiness = 97,
                 Hunger = 10,
                 IsAwake = true,
@@ -270,7 +323,7 @@ namespace HanaJotchi
 
         private async void PerformAction(string action)
         {
-            petState = "Debug State";
+            petState = "[Debug State] " + action;
             RenderGame();
 
             // Update stats via API
@@ -297,15 +350,13 @@ namespace HanaJotchi
         }
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            // Define the same pill area you used in your RenderGame method
-            Rectangle pillRect = new Rectangle(10, 10, pictureBox1.Width - 30, pictureBox1.Height - 30);
-
-            // Only start dragging if the click is inside the pill shape
-            if (pillRect.Contains(e.Location) && e.Button == MouseButtons.Left)
+            // Drag as we are pressing on any image render of the object,
+            // the side effect of a picturebox will drag everything except transparent
+            if (e.Button == MouseButtons.Left)
             {
                 isDragging = true;
                 lastCursorPos = Cursor.Position;
-                lastFormPos = this.Location;
+                lastFormPos = Location;
             }
         }
 
@@ -318,7 +369,7 @@ namespace HanaJotchi
                 int diffY = Cursor.Position.Y - lastCursorPos.Y;
 
                 // Update the form's position
-                this.Location = new Point(lastFormPos.X + diffX, lastFormPos.Y + diffY);
+                Location = new Point(lastFormPos.X + diffX, lastFormPos.Y + diffY);
             }
         }
 
