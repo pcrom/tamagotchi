@@ -27,23 +27,37 @@ namespace HanaJotchi
         public int Nose { get; set; }
         public int Mouth { get; set; }
 
+
+        public float DefaultDecayRate { get { return 0.5f; }}
+
         public void Update()
         {
-            if (IsAwake)
+            if (Hunger > 70)
             {
-                Hunger = Math.Min(100, Hunger + 1);
-                Happiness = Math.Max(0, Happiness - 1);
+                //TODO Fix this, it's currently does not work
+                Happiness -= (int)DefaultDecayRate * 2;
             }
+
+            if (!IsAwake)
+            {
+                return;
+            }
+
+            /* Run Each Update Cycle */
+
+            Hunger = Math.Min(100, Hunger + (int)DefaultDecayRate);
         }
 
         public void Feed()
         {
+            WakeUp();
             Hunger = Math.Max(0, Hunger - 10);
             Happiness = Math.Min(100, Happiness + 5);
         }
 
         public void Play()
         {
+            WakeUp();
             Happiness = Math.Min(100, Happiness + 10);
             Hunger = Math.Min(100, Hunger + 5);
         }

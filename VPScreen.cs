@@ -113,6 +113,8 @@ namespace HanaJotchi
                     blinkTimer = 0;
                 }
             }
+
+            hanaJotchiPet.Update();
         }
 
         /// <summary>
