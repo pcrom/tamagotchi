@@ -45,7 +45,7 @@ namespace HanaJotchi
 
             /* Run Each Update Cycle */
 
-            Hunger = Math.Min(100, Hunger + (int)DefaultDecayRate);
+            Hunger = Math.Min(100, Hunger - (int)DefaultDecayRate);
         }
 
         public void Feed()

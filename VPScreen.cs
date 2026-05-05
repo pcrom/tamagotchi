@@ -31,12 +31,12 @@ namespace HanaJotchi
         // Current stats (default values until API loads)
 
         // Position
-        private int petX = 180;
+        private int petX = 150;
         private int petY = 200;
 
 
         // Where the pet wants to go
-        private int targetX = 220;
+        private int targetX = 210;
 
         // Tracks when to blink
         private int blinkTimer = 0;
@@ -89,7 +89,7 @@ namespace HanaJotchi
             //Occasionally pick a new random spot
             if (rnd.Next(0, 50) == 1)
             {
-                targetX = rnd.Next(50, pictureBox1.Width - 50);
+                targetX = rnd.Next(150, pictureBox1.Width - 150);
             }
 
 
@@ -370,9 +370,9 @@ namespace HanaJotchi
                 Token = "abc123", //This Token would be a unique identifier from the API, it is the lifeline to your pet's data and must be included in all API calls to update or retrieve stats.
                 Age = 2,
                 Description = "A happy little pet.",
-                Experience = 19,
-                Happiness = 97,
-                Hunger = 10,
+                Experience = 79,
+                Happiness = 67,
+                Hunger = 60,
                 IsAwake = true,
                 Species = "Cat",
             };
