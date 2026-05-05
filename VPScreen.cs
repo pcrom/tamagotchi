@@ -23,17 +23,20 @@ namespace HanaJotchi
         private bool isDragging = false;
         private Point lastCursorPos;
         private Point lastFormPos;
+        
+        // 0 (invisible) to 255 (solid)
+        private int uiAlpha = 100; 
 
 
         // Current stats (default values until API loads)
 
         // Position
-        private int petX = 160;
-        private int petY = 300;
+        private int petX = 180;
+        private int petY = 200;
 
 
         // Where the pet wants to go
-        private int targetX = 320;
+        private int targetX = 220;
 
         // Tracks when to blink
         private int blinkTimer = 0;
@@ -72,7 +75,6 @@ namespace HanaJotchi
         /// </summary>
         private void UpdatePetLogic()
         {
-
             //Move slowly toward targetX
             if (petX < targetX)
             { 
@@ -127,8 +129,8 @@ namespace HanaJotchi
         /// <param name="color">The color used to fill the bar.</param>
         private void DrawStatBar(Graphics g, string label, int value, int x, int y, int ax, int ay, Color color)
         {
-            g.DrawString(label, new Font("Arial", 10), Brushes.Black, x - ax, y - ay);
-            g.FillRectangle(new SolidBrush(color), x + 60, y + 2, value, 10);
+            g.DrawString(label, new Font("Arial", 10), GetUIBrush(Color.Black), x - ax, y - ay);
+            g.FillRectangle(GetUIBrush(color), x + 60, y + 2, value, 10);
             g.DrawRectangle(Pens.Black, x + 60, y + 2, 100, 10); // Background outline
         }
 
@@ -145,10 +147,10 @@ namespace HanaJotchi
             // We flip the logic so the visual remains consistent for the user
             int checkValue = isInverse ? (100 - value) : value;
 
-            if (checkValue <= 20) return Color.Red;       // Danger zone
-            if (checkValue >= 50) return Color.LimeGreen; // Healthy zone
+            if (checkValue <= 20) return Color.FromArgb(uiAlpha, Color.Red); // Danger zone
+            if (checkValue >= 50) return Color.FromArgb(uiAlpha, Color.LimeGreen); // Healthy zone
 
-            return Color.Gold; // Caution/Normal
+            return Color.FromArgb(uiAlpha, Color.Gold); // Caution/Normal
         }
 
         /// <summary>
@@ -172,6 +174,7 @@ namespace HanaJotchi
 
                 // Define the bounding area for the egg
                 Rectangle rect = new Rectangle(10, 10, pictureBox1.Width - 40, pictureBox1.Height - 40);
+
 
                 // Create the egg shape using Bezier curves
                 using (GraphicsPath path = new GraphicsPath())
@@ -211,6 +214,7 @@ namespace HanaJotchi
                 // Create a rectangle for the screen area
                 Rectangle screenRect = new Rectangle(screenX, screenY, screenWidth, screenHeight);
 
+
                 // Draw the LCD background (classic greenish-grey)
                 Color lcdColor = Color.FromArgb(255, 170, 185, 150);
                 g.FillRectangle(new SolidBrush(lcdColor), screenRect);
@@ -221,8 +225,8 @@ namespace HanaJotchi
 
 
                 //Draw Stats Bars
-                DrawStatBar(g, "Hunger", hanaJotchiPet.Hunger, 310, 410, 0, 3, GetStatColor(hanaJotchiPet.Hunger, true));
-                DrawStatBar(g, "Happiness", hanaJotchiPet.Happiness, 310, 435, 10, 3, GetStatColor(hanaJotchiPet.Happiness, false));
+                DrawStatBar(g, "Hunger", hanaJotchiPet.Hunger, 340, 360, 0, 3, GetStatColor(hanaJotchiPet.Hunger, true));
+                DrawStatBar(g, "Happiness", hanaJotchiPet.Happiness, 340, 375, 10, 3, GetStatColor(hanaJotchiPet.Happiness, false));
 
                 // Debug: Show targetX as a number and bar for testing movement logic
                 int stateUpdate = targetX % 100;
@@ -269,9 +273,27 @@ namespace HanaJotchi
                 // Draw Debug State
                 g.DrawString($"STATUS: {petState}", new Font("Courier New", 12), Brushes.Black, 111, 470);
 
-                // Draw Experience as a pie chart
-                g.FillPie(Brushes.BlueViolet, 99, 340, 50, 50, 0, (hanaJotchiPet.Experience % 100) * 3.6f);
 
+                // Draw Experience as a pie chart
+                using (SolidBrush expBrush = GetUIBrush(Color.BlueViolet))
+                {
+                    float sweepAngle = (hanaJotchiPet.Experience % 100) * 3.6f;
+                    g.FillPie(expBrush, 99, 340, 50, 50, 0, sweepAngle);
+                }
+
+                // Convert screen coordinates to be relative to the PictureBox
+                Point clientCursor = pictureBox1.PointToClient(Cursor.Position);
+
+                if (screenRect.Contains(clientCursor))
+                {
+                    // Fade in to solid when hovering the screen
+                    uiAlpha = Math.Min(255, uiAlpha + 35);
+                }
+                else
+                {
+                    // Fade out to translucent when the mouse leaves the screen
+                    uiAlpha = Math.Max(60, uiAlpha - 20);
+                }
             }
 
             // Dispose of the old image to free memory, then set the new canvas
@@ -280,6 +302,30 @@ namespace HanaJotchi
             // Set the rendered canvas as the PictureBox image
             pictureBox1.Image = canvas;
 
+        }
+
+        /// <summary>
+        /// Creates a SolidBrush using the current global uiAlpha and a base color.
+        /// </summary>
+        private SolidBrush GetUIBrush(Color baseColor)
+        {
+            // Color.FromArgb(Alpha, Color) handles the conversion automatically
+            return new SolidBrush(Color.FromArgb(uiAlpha, baseColor));
+        }
+
+
+        private GraphicsPath CreatePillPath(Rectangle rect)
+        {
+            var path = new GraphicsPath();
+            int diameter = rect.Height; // Use the height as the diameter for the rounded ends
+            Rectangle leftArc = new Rectangle(rect.X, rect.Y, diameter, diameter);
+            Rectangle rightArc = new Rectangle(rect.Right - diameter, rect.Y, diameter, diameter);
+
+            path.AddArc(leftArc, 90, 180);   // Left semi-circle
+            path.AddArc(rightArc, 270, 180); // Right semi-circle
+            path.CloseFigure();              // Joins them with straight lines
+
+            return path;
         }
 
         private void VPScreen_Shown(object sender, EventArgs e)
