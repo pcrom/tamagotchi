@@ -1,4 +1,4 @@
-# 👾 Tamagotchi
+# 👾 A Tamagotchi Like Companion
 
 A simple virtual pet game where you can feed, play, and care for your digital companion!
 
@@ -18,3 +18,7 @@ A simple virtual pet game where you can feed, play, and care for your digital co
 ## 🛠️ Built With
 - **C#** (The Game Interface)
 - **PHP & MySQL** (The Online Brain & Memory)
+
+## ⚖️ Disclaimer
+**HanaJotchi** is an independent, fan-made educational project. It is **not affiliated with, endorsed by, or associated with** Bandai, the Tamagotchi franchise, or any of its subsidiaries. All trademarks belong to their respective owners.
+
