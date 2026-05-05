@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{14BC11D4-8C1E-4984-B9AE-C67A89880DEA}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Tamagotchi</RootNamespace>
-    <AssemblyName>Tamagotchi</AssemblyName>
+    <RootNamespace>HanaJotchi</RootNamespace>
+    <AssemblyName>HanaJotchi</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -46,7 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TamagotchiGotchaGotcha.cs" />
+    <Compile Include="HanaJotchiGotchaGotcha.cs" />
     <Compile Include="VPScreen.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -63,6 +63,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="VPScreen.resx">
       <DependentUpon>VPScreen.cs</DependentUpon>

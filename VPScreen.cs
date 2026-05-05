@@ -5,12 +5,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Tamagotchi //TODO: Change this namespace and all references so its not using a trademarked name, for now this is just for demonstration purposes
+namespace HanaJotchi
 {
     public partial class VPScreen : Form
     {
-        private TamagotchiGotchaGotcha pet;
-        private Timer TamagotchiHeartbeat;
+        private HanaJotchiGotchaGotcha pet;
+        private Timer HanaJotchiHeartbeat;
 
         private const string apiEndpoint = "https://ewaygames.com/GameApi/VirtuPet";
 
@@ -42,7 +42,7 @@ namespace Tamagotchi //TODO: Change this namespace and all references so its not
             InitializeComponent();
         }
 
-        private void TamagotchiHeartbeat_Tick(object sender, EventArgs e)
+        private void HanaJotchiHeartbeat_Tick(object sender, EventArgs e)
         {
             // Handle hunger/happiness over time
             UpdatePetLogic();
@@ -175,7 +175,7 @@ namespace Tamagotchi //TODO: Change this namespace and all references so its not
         private void VPScreen_Shown(object sender, EventArgs e)
         {
             // Initialize pet data (in a real game, this would come from the API)
-            pet = new TamagotchiGotchaGotcha
+            pet = new HanaJotchiGotchaGotcha
             {
                 Name = "Fluffy",
                 Token = "abc123", //This Token would be a unique identifier from the API, it is the lifeline to your pet's data and must be included in all API calls to update or retrieve stats.
@@ -189,7 +189,7 @@ namespace Tamagotchi //TODO: Change this namespace and all references so its not
             };
 
             // Create the timer that will drive the game loop
-            TamagotchiHeartbeat = new Timer
+            HanaJotchiHeartbeat = new Timer
             {
                 // Set this timer to 100ms or 200ms for a "retro" frame rate
                 Interval = 100,
@@ -197,7 +197,7 @@ namespace Tamagotchi //TODO: Change this namespace and all references so its not
             };
 
             // Start the game loop
-            TamagotchiHeartbeat.Tick += TamagotchiHeartbeat_Tick;
+            HanaJotchiHeartbeat.Tick += HanaJotchiHeartbeat_Tick;
 
             
         }

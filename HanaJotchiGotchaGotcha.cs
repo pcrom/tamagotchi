@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Tamagotchi
+namespace HanaJotchi
 {
-    class TamagotchiGotchaGotcha
+    class HanaJotchiGotchaGotcha
     {
         public string Name { get; set; }
         public string Token { get; set; }
@@ -143,7 +143,7 @@ namespace Tamagotchi
             Console.WriteLine("TODO: Invoke greeting, properly display on screen!");
         }
 
-        public TamagotchiGotchaGotcha()
+        public HanaJotchiGotchaGotcha()
         {
 
         }

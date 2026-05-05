@@ -1,4 +1,4 @@
-﻿namespace Tamagotchi
+﻿namespace HanaJotchi
 {
     partial class VPScreen
     {
