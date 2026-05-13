@@ -2,7 +2,7 @@
 
 namespace HanaJotchi
 {
-    class GotchaGotchiPet
+    public class GotchaGotchiPet
     {
         public string Name { get; set; }
         public string Token { get; set; }

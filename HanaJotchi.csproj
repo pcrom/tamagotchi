@@ -53,6 +53,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GotchaGotchiPet.cs" />
+    <Compile Include="Networking.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="VPScreen.cs">
       <SubType>Form</SubType>
     </Compile>
