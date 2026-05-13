@@ -114,8 +114,10 @@ namespace HanaJotchi
                 g.DrawRectangle(new Pen(Color.DimGray, 2), screenRect); // Inner frame
                 g.DrawRectangle(new Pen(Color.Black, 1), Rectangle.Inflate(screenRect, 2, 2)); // Outer plastic edge
 
+                GG_Backgrounds.DrawStandardBackground(g, screenRect, CanvasBox.Width, CanvasBox.Height, 20, petX, petY + 20);
+
                 // Use a slightly darker shade of your LCD color for high-contrast visibility
-                using (Pen gridPen = GG_Graphics.GetUIPen(Color.FromArgb(0, 0, 0, 0), uiAlpha/16))
+                using (Pen gridPen = GG_Graphics.GetUIPen(Color.FromArgb(0, 0, 0, 0), uiAlpha/32))
                 {
                     int gridSize = 41; // Distance between grid lines in pixels
 
