@@ -2,6 +2,10 @@
 
 A simple virtual pet game where you can feed, play, and care for your digital companion!
 
+<p align="left"><i>HanaJotchi Alpha (May 12th 2026) Preview:</i><br>
+  <img src="https://ewaygames.com/static/images/screenshots/HanaJotchi_5.12.26_Alpha.png" alt="HanaJotchi Alpha Preview" width="400">
+</p>
+
 ## 🎮 How to Play
 1. **Download the Game**: Click the green **Code** button and select **Download ZIP** (or download the latest `.exe` from the Releases section).
 2. **Open the App**: Find and run the **HanaJotchi.exe** file.
