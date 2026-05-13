@@ -106,7 +106,6 @@ namespace HanaJotchi
                 // Create a rectangle for the screen area
                 Rectangle screenRect = new Rectangle(screenX, screenY, screenWidth, screenHeight);
 
-
                 // Draw the LCD background (classic greenish-grey)
                 Color lcdColor = Color.FromArgb(255, 170, 185, 150);
                 g.FillRectangle(new SolidBrush(lcdColor), screenRect);
@@ -115,6 +114,23 @@ namespace HanaJotchi
                 g.DrawRectangle(new Pen(Color.DimGray, 2), screenRect); // Inner frame
                 g.DrawRectangle(new Pen(Color.Black, 1), Rectangle.Inflate(screenRect, 2, 2)); // Outer plastic edge
 
+                // Use a slightly darker shade of your LCD color for high-contrast visibility
+                using (Pen gridPen = GG_Graphics.GetUIPen(Color.FromArgb(0, 0, 0, 0), uiAlpha/16))
+                {
+                    int gridSize = 41; // Distance between grid lines in pixels
+
+                    // Draw Vertical Lines
+                    for (int x = screenRect.Left + gridSize; x < screenRect.Right; x += gridSize)
+                    {
+                        g.DrawLine(gridPen, x, screenRect.Top, x, screenRect.Bottom);
+                    }
+
+                    // Draw Horizontal Lines
+                    for (int y = screenRect.Top + gridSize; y < screenRect.Bottom; y += gridSize)
+                    {
+                        g.DrawLine(gridPen, screenRect.Left, y, screenRect.Right, y);
+                    }
+                }
 
                 //Draw Stats Bars
                 GG_Graphics.DrawStatBar(g, "Hunger", hanaJotchiPet.Hunger, 340, 360, 0, 3, GG_Graphics.GetStatColor(hanaJotchiPet.Hunger, true));
@@ -167,7 +183,7 @@ namespace HanaJotchi
 
 
                 // Draw Experience as a pie chart
-                using (SolidBrush expBrush = GG_Graphics.GetUIBrush(Color.BlueViolet))
+                using (SolidBrush expBrush = GG_Graphics.GetUIBrush(Color.BlueViolet, uiAlpha))
                 {
                     float sweepAngle = (hanaJotchiPet.Experience % 100) * 3.6f;
                     g.FillPie(expBrush, 99, 340, 50, 50, 0, sweepAngle);

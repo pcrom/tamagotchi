@@ -21,9 +21,9 @@ namespace HanaJotchi
         /// <param name="color">The color used to fill the bar.</param>
         public static void DrawStatBar(Graphics g, string label, float value, int x, int y, int ax, int ay, Color color)
         {
-            g.DrawString(label, new Font("Arial", 10), GetUIBrush(Color.Black), x - ax, y - ay);
-            g.FillRectangle(GetUIBrush(color), x + 60, y + 2, value, 10);
-            g.DrawRectangle(GetUIPen(Color.Black), x + 60, y + 2, 100, 10); // Background outline
+            g.DrawString(label, new Font("Arial", 10), GetUIBrush(Color.Black, uiAlpha), x - ax, y - ay);
+            g.FillRectangle(GetUIBrush(color, uiAlpha), x + 60, y + 2, value, 10);
+            g.DrawRectangle(GetUIPen(Color.Black, uiAlpha), x + 60, y + 2, 100, 10); // Background outline
         }
 
         /// <summary>
@@ -49,19 +49,19 @@ namespace HanaJotchi
         /// <summary>
         /// Creates a SolidBrush using the current global uiAlpha and a base color.
         /// </summary>
-        public static SolidBrush GetUIBrush(Color baseColor)
+        public static SolidBrush GetUIBrush(Color baseColor, int _uiAlpha)
         {
             // Color.FromArgb(Alpha, Color) handles the conversion automatically
-            return new SolidBrush(Color.FromArgb(uiAlpha, baseColor));
+            return new SolidBrush(Color.FromArgb(_uiAlpha, baseColor));
         }
 
         /// <summary>
         /// Creates a Pen using the current global uiAlpha and a base color.
         /// </summary>
-        public static Pen GetUIPen(Color baseColor)
+        public static Pen GetUIPen(Color baseColor, int _uiAlpha)
         {
             // Color.FromArgb(Alpha, Color) handles the conversion automatically
-            return new Pen(Color.FromArgb(uiAlpha, baseColor));
+            return new Pen(Color.FromArgb(_uiAlpha, baseColor));
         }
 
 
